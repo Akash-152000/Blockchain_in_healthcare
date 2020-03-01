@@ -1,0 +1,97 @@
+<head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<canvas id="lineChart" height="400" width="1000"></canvas>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        type: "GET",
+        url: "/static/ecgdata.csv",
+        dataType: "text",
+        success: function(data) {processData(data);}
+     });
+});
+
+function processData(allText) {
+    var allTextLines = allText.split(/\r\n|\n/);
+    var headers = allTextLines[0].split(',');
+    var lines = [];
+	var labs = [];
+
+    for (var i=1; i<500; i++) {
+        var data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+            lines.push(data[0]);
+			labs.push('.');
+        }
+    }
+    // alert(lines);
+	const CHART = document.getElementById("lineChart");
+	let lineChart = new Chart(CHART, {
+	type: 'line',
+	data: {
+        labels: labs,
+        datasets: [{
+			fill: false,
+            label: 'My First dataset',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+			borderWidth: 1,
+			pointRadius: 0,
+            data: lines
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+		responsive: false,
+	}
+});
+var i = 201;
+setInterval(function(){
+		var data = allTextLines[i++].split(',')
+		lineChart.data.labels.pop();
+		lineChart.data.datasets.forEach((dataset) => {
+			dataset.data.shift();
+		});
+		lineChart.update();
+		lineChart.data.labels.push('.');
+		lineChart.data.datasets.forEach((dataset) => {
+			dataset.data.push(data[0]);
+		});	
+		lineChart.update();
+	},10);
+}
+
+
+</script><br/>
+
+<div id="con"></div>
+<script> 
+		x = document.getElementById('con');
+		var counts = {{ content|tojson }};
+		//console.log(counts);
+		var newsArray = [];   // your code puts strings into this array
+		var curNewsIndex = 1;
+		var count = 0;
+		var list = [];
+
+		var intervalID = setInterval(function() {
+			curNewsIndex += 1;
+			if(count <= 2 && counts[curNewsIndex] !== '\n'){
+				list.push(counts[curNewsIndex]);
+				count++;
+				}
+			else{
+				x.innerHTML = list.join('');
+				console.log(list)
+				list = [];
+				count = 0;
+				}
+			   // set new news item into the ticker
+		}, 999/3);
+</script>
+<form method="post" action="{{ url_for('show') }}">
+<input type="submit">
+</form>

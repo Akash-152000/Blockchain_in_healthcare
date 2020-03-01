@@ -1,0 +1,28 @@
+<div id="con"></div>
+<script> 
+		x = document.getElementById('con');
+		var counts = {{ content|tojson }};
+		//console.log(counts);
+		var newsArray = [];   // your code puts strings into this array
+		var curNewsIndex = 1;
+		var count = 0;
+		var list = [];
+
+		var intervalID = setInterval(function() {
+			curNewsIndex += 1;
+			if(count <= 2 && counts[curNewsIndex] !== '\n'){
+				list.push(counts[curNewsIndex]);
+				count++;
+				}
+			else{
+				x.innerHTML = list.join('');
+				console.log(list)
+				list = [];
+				count = 0;
+				}
+			   // set new news item into the ticker
+		}, 1000);
+</script>
+<form method="post" action="{{ url_for('show') }}">
+<input type="submit">
+</form>

@@ -1,0 +1,10 @@
+<form method="post" action="{{ url_for('newuser') }}">
+<select name="user">
+<option value="doctor">Doctor</option>
+<option value="pharmacist">Pharmacist</option>
+<option value="insurance">Insurance</option>
+</select>
+<input type="text" name="username">
+<input type="password" name="password">
+<input type="submit">
+</form>
